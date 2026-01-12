@@ -16,8 +16,10 @@ public class QuestionSO : ScriptableObject
     [SerializeField] private int _correctChoiceIndex = -1;
     private const int MIN_CHOICES = 2;
     private const int _MAX_CHOICES = 5;
+    public string Question => _question;
+    public int CorrectChoiceIndex => _correctChoiceIndex;
 
-
+    public int ChoiceCount => _choicesList.Count;
 
     private void OnValidate()
     {
@@ -38,14 +40,12 @@ public class QuestionSO : ScriptableObject
             Debug.LogError($"<color=red><b>ACTION REQUIRED:</b></color> Question '{name}' does not have a valid index for the correct answer", this);
         }
     }
-    public string Question => _question;
-    public int CorrectChoiceIndex => _correctChoiceIndex;
 
     public string GetChoiceFromIndex(int index)
     {
         return _choicesList[index];
     }
 
-    public int ChoiceCount => _choicesList.Count;
+
 
 }

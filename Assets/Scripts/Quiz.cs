@@ -26,6 +26,11 @@ public class Quiz : MonoBehaviour
     [Header("Game Session Data File")]
     [SerializeField] private GameSessionDataSO _sessionData;
 
+    [Header("Gameplay Stuff")]
+    [SerializeField] private int _removeOneAmount = 1;
+    [SerializeField] private TextMeshProUGUI _removeOneAmountText;
+    private bool _alreadyRemovedOneThisTurn = false;
+
     private ScoreKeeper _scoreKeeper;
     private int _correctChoiceIndex;
     private Timer _timer;
@@ -47,6 +52,7 @@ public class Quiz : MonoBehaviour
         _timer = GetComponentInChildren<Timer>();
         _scoreKeeper = FindAnyObjectByType<ScoreKeeper>();
         _scoreText.text = "Score: 0%";
+        _removeOneAmountText.text = "Power: " + _removeOneAmount;
 
         _progressBar.maxValue = _questionsList.Count - 1;
         _progressBar.value = 0;
@@ -56,8 +62,6 @@ public class Quiz : MonoBehaviour
 
     private void Update()
     {
-
-
 
         if (_timer.CanLoadNextQuestion)
         {
@@ -143,6 +147,49 @@ public class Quiz : MonoBehaviour
         }
     }
 
+    private void SetupRemoveOne()
+    {
+        _alreadyRemovedOneThisTurn = false;
+    }
+    //removes one option
+
+    public void RemoveOne()
+    {
+        if (_removeOneAmount <= 0)
+        {
+            Debug.Log("Out of Remove One!");
+            return;
+        }
+
+        if (_currentQuestion.ChoiceCount == 2)
+        {
+            Debug.Log("Can't Remove One when there's only 2 options!");
+            return;
+        }
+
+        if(_alreadyRemovedOneThisTurn)
+        {
+            Debug.Log("Can only Remove One once per turn!");
+            return;
+        }
+
+        _choiceObjectsList[SelectRandomIncorrrectChoiceIndex()].SetActive(false);
+        _removeOneAmount--;
+        _removeOneAmountText.text = "Power: " + _removeOneAmount;
+        _alreadyRemovedOneThisTurn = true;
+    }
+
+    private int SelectRandomIncorrrectChoiceIndex()
+    {
+        int randomIndex = Random.Range(0, _currentQuestion.ChoiceCount - 1);
+
+        if (randomIndex >= _currentQuestion.CorrectChoiceIndex)
+        {
+            randomIndex++;
+        }
+
+        return randomIndex;
+    }
     private void LoadResultsScene()
     {
         SceneManager.LoadScene("ResultsScene");
@@ -172,6 +219,7 @@ public class Quiz : MonoBehaviour
         GetRandomQuestion();
         DisplayQuestion();
         _scoreKeeper.IncrementNumberOfQuestionsSeen();
+        SetupRemoveOne();
 
         // I prefer to show the bar with no progress when we start out
         if (_firstQuestion)
