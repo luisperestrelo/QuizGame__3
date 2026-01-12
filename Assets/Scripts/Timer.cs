@@ -20,6 +20,8 @@ public class Timer : MonoBehaviour
         set => _canLoadNextQuestion = value;
     }
 
+    public float TimeToShowCorrectAnswer => _timeToShowCorrectAnswer;
+
     public bool IsAnsweringQuestion => _isAnsweringQuestion;
 
     private void Update()

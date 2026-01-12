@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class Quiz : MonoBehaviour
@@ -21,6 +22,9 @@ public class Quiz : MonoBehaviour
 
     [Header("Slider")]
     [SerializeField] private Slider _progressBar;
+
+    [Header("Game Session Data File")]
+    [SerializeField] private GameSessionDataSO _sessionData;
 
     private ScoreKeeper _scoreKeeper;
     private int _correctChoiceIndex;
@@ -46,18 +50,22 @@ public class Quiz : MonoBehaviour
 
         _progressBar.maxValue = _questionsList.Count - 1;
         _progressBar.value = 0;
+        _sessionData.Clear();
         //LoadNextQuestion(); //first question is loaded in Update
     }
 
     private void Update()
     {
+
+
+
         if (_timer.CanLoadNextQuestion)
         {
             _hasAnsweredEarly = false;
             LoadNextQuestion();
             _timer.CanLoadNextQuestion = false;
         }
-        else if (!_hasAnsweredEarly && !_timer.IsAnsweringQuestion)
+        else if (!_hasAnsweredEarly && !_timer.IsAnsweringQuestion && _currentQuestion != null)
         {
             HandlePlayerChoice(-1);
             SetButtonState(false);
@@ -121,6 +129,23 @@ public class Quiz : MonoBehaviour
         _scoreKeeper.CalculateScore();
         _scoreText.text = "Score: " + _scoreKeeper.CurrentScore + "%";
         _isGameFinished = CheckIfGameFinished();
+
+        if (_isGameFinished)
+        {
+            _sessionData.SetSessionData(
+                                        _scoreKeeper.CurrentScore,
+                                        _scoreKeeper.NumberOfCorrectAnswers,
+                                        _scoreKeeper.NumberOfQuestionsSeen
+                                        );
+
+            Invoke(nameof(LoadResultsScene), _timer.TimeToShowCorrectAnswer);
+
+        }
+    }
+
+    private void LoadResultsScene()
+    {
+        SceneManager.LoadScene("ResultsScene");
 
     }
 
