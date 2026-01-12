@@ -12,10 +12,27 @@ public class Timer : MonoBehaviour
     private bool _isAnsweringQuestion = false;
     private float _fillFraction;
     private float _activeTimer = 1f;
+    private bool _canLoadNextQuestion = false;
+
+    public bool CanLoadNextQuestion
+    {
+        get => _canLoadNextQuestion;
+        set => _canLoadNextQuestion = value;
+    }
+
+    public bool IsAnsweringQuestion => _isAnsweringQuestion;
+
     private void Update()
     {
         UpdateTimer();
         _timerImage.fillAmount = _fillFraction;
+
+
+    }
+
+    public void CancelTimer()
+    {
+        _timerValue = 0f;
     }
 
     private void UpdateTimer()
@@ -28,7 +45,8 @@ public class Timer : MonoBehaviour
             {
                 _timerValue = _timeToShowCorrectAnswer;
                 _activeTimer = _timeToShowCorrectAnswer;
-                _isAnsweringQuestion=false;
+                _isAnsweringQuestion = false;
+                
             }
 
         }
@@ -37,22 +55,22 @@ public class Timer : MonoBehaviour
             if (_timerValue <= 0)
             {
                 _isAnsweringQuestion = true;
+                _canLoadNextQuestion = true; // should I decouple with an event? not sure
                 _timerValue = _timeToCompleteQuestion;
                 _activeTimer = _timeToCompleteQuestion;
             }
         }
 
-        if (_timerValue > 0 )
+        if (_timerValue > 0)
         {
             _fillFraction = _timerValue / _activeTimer;
         }
 
         // This isnt really needed no?
-    //    if (_timerValue <= 0)
-    //    {
-     //       _timerValue = _timeToCompleteQuestion;
-    //    }
+        //    if (_timerValue <= 0)
+        //    {
+        //       _timerValue = _timeToCompleteQuestion;
+        //    }
 
-        Debug.Log(_timerValue);
     }
 }
