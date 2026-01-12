@@ -18,11 +18,15 @@ public class Quiz : MonoBehaviour
 
     [Header("Scoring")]
     [SerializeField] private TextMeshProUGUI _scoreText;
-    
+
+    [Header("Slider")]
+    [SerializeField] private Slider _progressBar;
+
     private ScoreKeeper _scoreKeeper;
     private int _correctChoiceIndex;
     private Timer _timer;
     private bool _hasAnsweredEarly;
+    private bool _isGameFinished = false;
 
     //I know all this caching is not necessary for a game like this, just doing it for practice
     //Also I should probably put them all in a wrapper class
@@ -33,12 +37,15 @@ public class Quiz : MonoBehaviour
 
 
 
-
+    private bool _firstQuestion = true;
     private void Start()
     {
         _timer = GetComponentInChildren<Timer>();
         _scoreKeeper = FindAnyObjectByType<ScoreKeeper>();
         _scoreText.text = "Score: 0%";
+
+        _progressBar.maxValue = _questionsList.Count - 1;
+        _progressBar.value = 0;
         //LoadNextQuestion(); //first question is loaded in Update
     }
 
@@ -113,9 +120,14 @@ public class Quiz : MonoBehaviour
 
         _scoreKeeper.CalculateScore();
         _scoreText.text = "Score: " + _scoreKeeper.CurrentScore + "%";
+        _isGameFinished = CheckIfGameFinished();
 
     }
 
+    private bool CheckIfGameFinished()
+    {
+        return _questionsList.Count <= 0;
+    }
     private void SetButtonState(bool state)
     {
         for (int i = 0; i < _choiceButtonsList.Count; i++)
@@ -135,6 +147,15 @@ public class Quiz : MonoBehaviour
         GetRandomQuestion();
         DisplayQuestion();
         _scoreKeeper.IncrementNumberOfQuestionsSeen();
+
+        // I prefer to show the bar with no progress when we start out
+        if (_firstQuestion)
+        {
+            _firstQuestion = false;
+            return;
+        }
+        _progressBar.value++;
+
     }
 
     private void GetRandomQuestion()
