@@ -14,6 +14,8 @@ public class Quiz : MonoBehaviour
     [SerializeField] private Sprite _defaultAnswerSprite;
     [SerializeField] private Sprite _correctAnswerSprite;
 
+    //I know all this caching is not necessary for a game like this, just doing it for practice
+    //Also I should probably put them all in a wrapper class
     private List<TextMeshProUGUI> _choiceTextsList = new List<TextMeshProUGUI>();
     private List<Image> _choiceImagesList = new List<Image>();
     private List<Button> _choiceButtonsList = new List<Button>();
