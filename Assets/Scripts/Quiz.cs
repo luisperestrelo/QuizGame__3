@@ -29,6 +29,7 @@ public class Quiz : MonoBehaviour
     [Header("Gameplay Stuff")]
     [SerializeField] private int _removeOneAmount = 1;
     [SerializeField] private TextMeshProUGUI _removeOneAmountText;
+    [SerializeField] private RemoveOneOracle _removeOneVisual;
     private bool _alreadyRemovedOneThisTurn = false;
 
     private ScoreKeeper _scoreKeeper;
@@ -153,23 +154,27 @@ public class Quiz : MonoBehaviour
     }
     //removes one option
 
-    public void RemoveOne()
+    public void TryRemoveOne()
     {
+        
         if (_removeOneAmount <= 0)
         {
             Debug.Log("Out of Remove One!");
+            _removeOneVisual.ClickAnimation(false);
             return;
         }
 
         if (_currentQuestion.ChoiceCount == 2)
         {
             Debug.Log("Can't Remove One when there's only 2 options!");
+            _removeOneVisual.ClickAnimation(false);
             return;
         }
 
         if(_alreadyRemovedOneThisTurn)
         {
             Debug.Log("Can only Remove One once per turn!");
+            _removeOneVisual.ClickAnimation(false);
             return;
         }
 
@@ -177,6 +182,7 @@ public class Quiz : MonoBehaviour
         _removeOneAmount--;
         _removeOneAmountText.text = "Power: " + _removeOneAmount;
         _alreadyRemovedOneThisTurn = true;
+        _removeOneVisual.ClickAnimation(true);
     }
 
     private int SelectRandomIncorrrectChoiceIndex()
